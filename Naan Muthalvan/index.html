@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Reminder System</title>
+<style>
+  body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+}
+
+.container {
+  max-width: 500px;
+  margin: 60px auto;
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+input, textarea {
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+button {
+  margin-top: 20px;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#status {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+  color: green;
+}
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Email Reminder System</h1>
+    <form id="reminderForm">
+      <label>Email:</label>
+      <input type="email" id="email" required />
+
+      <label>Subject:</label>
+      <input type="text" id="subject" required />
+
+      <label>Message:</label>
+      <textarea id="message" rows="4" required></textarea>
+
+      <label>Reminder Time (in minutes):</label>
+      <input type="number" id="delay" min="1" required />
+
+      <button type="submit">Set Reminder</button>
+    </form>
+
+    <p id="status"></p>
+  </div>
+
+  <!-- SMTP.js -->
+  <script src="https://smtpjs.com/v3/smtp.js"></script>
+  <script>document.getElementById("reminderForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const subject = document.getElementById("subject").value;
+  const message = document.getElementById("message").value;
+  const delay = parseInt(document.getElementById("delay").value); // in minutes
+
+  document.getElementById("status").innerText = `Reminder set! Email will be sent in ${delay} minute(s).`;
+
+  // Convert delay to milliseconds
+  const delayMs = delay * 60 * 1000;
+
+  setTimeout(() => {
+    sendEmail(email, subject, message);
+  }, delayMs);
+});
+
+function sendEmail(to, subject, body) {
+  Email.send({
+    SecureToken: "YOUR_SMTPJS_SECURE_TOKEN", // Replace with your own
+    To: to,
+    From: "you@example.com", // Replace with your verified sender
+    Subject: subject,
+    Body: body,
+  }).then((message) => {
+    document.getElementById("status").innerText = "Reminder email sent!";
+  }).catch((err) => {
+    document.getElementById("status").innerText = "Failed to send email.";
+    console.error(err);
+  });
+}
+</script>
+</body>
+</html>
